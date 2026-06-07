@@ -81,10 +81,7 @@ SEPAY_ACCOUNT_NAME=your_bank_account_name_here
 4. Khởi chạy Ứng dụng
 Thực hiện chạy 2 câu lệnh cuối cùng này trên cửa sổ Terminal để kích hoạt hệ thống:
 ```bash
-# 1. Khởi tạo tài khoản Quản trị (Admin) mặc định cho hệ thống
-py create_admin.py
-
-# 2. Khởi chạy Server Flask chính thức để mở máy chủ Web Local
+# 1. Khởi chạy Server Flask chính thức để mở máy chủ Web Local
 py app.py
 ```
 Đường dẫn truy cập: Mở trình duyệt web và truy cập địa chỉ địa phương: http://localhost:5000
