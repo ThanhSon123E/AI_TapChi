@@ -86,7 +86,7 @@ py app.py
 ```
 Đường dẫn truy cập: Mở trình duyệt web và truy cập địa chỉ địa phương: http://localhost:5000
 
-Tài khoản Admin đăng nhập: admin@gmail.com / Mật khẩu: admin123
+Tài khoản Admin đăng nhập: admin@gmail.com / Mật khẩu: 123456
 
 🔑 PHẦN III: HƯỚNG DẪN CHI TIẾT CÁCH LẤY API KEY CẤU HÌNH
 1. Cách lấy mã đăng nhập Google OAuth2 (GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET)
