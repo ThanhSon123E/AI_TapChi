@@ -179,7 +179,7 @@ def register_admin(app, db, User, Payment, MagazineHistory=None, SystemSetting=N
                 "date": m.created_at.strftime("%d/%m/%Y")
             } for m in magazines[:10]],
             "payments": [{
-                "amount": f"{p.amount:,} VND",
+                "amount": p.amount,
                 "status": p.status,
                 "date": p.created_at.strftime("%d/%m/%Y")
             } for p in payments[:5]]
@@ -279,7 +279,7 @@ def register_admin(app, db, User, Payment, MagazineHistory=None, SystemSetting=N
             deepseek_api_key = request.form.get("deepseek_api_key", "").strip()
             gemini_api_key = request.form.get("gemini_api_key", "").strip()
             
-            pricing_per_magazine = request.form.get("pricing_per_magazine", "10000").strip()
+            pricing_per_magazine = request.form.get("pricing_per_magazine", "10000").replace(".", "").strip()
             pricing_packages = request.form.get("pricing_packages", "").strip()
             
             set_setting("llm_provider", llm_provider)
@@ -533,15 +533,20 @@ def register_admin(app, db, User, Payment, MagazineHistory=None, SystemSetting=N
     @admin_required
     def get_notifications():
         try:
+            lang = request.cookies.get("lang", "en")
+            is_en = lang == "en"
             notifications = []
             
             # 1. Tài khoản được tạo (New accounts in the last 30 days)
             users = User.query.order_by(User.id.desc()).limit(10).all()
             for u in users:
+                title = "New account" if is_en else "Tài khoản mới"
+                name_val = u.name or ("No name" if is_en else "Không tên")
+                content = f"Account <strong>{u.email}</strong> ({name_val}) has been registered successfully." if is_en else f"Tài khoản <strong>{u.email}</strong> ({name_val}) đã được đăng ký thành công."
                 notifications.append({
                     "type": "user_registered",
-                    "title": "Tài khoản mới",
-                    "content": f"Tài khoản <strong>{u.email}</strong> ({u.name or 'Không tên'}) đã được đăng ký thành công.",
+                    "title": title,
+                    "content": content,
                     "time": u.created_at.isoformat() if u.created_at else None,
                     "icon": "fa-user-plus",
                     "icon_color": "blue"
@@ -554,10 +559,12 @@ def register_admin(app, db, User, Payment, MagazineHistory=None, SystemSetting=N
             for p in pending_payments:
                 u = users_map.get(p.user_id)
                 email = u.email if u else f"User #{p.user_id}"
+                title = "Top-up request" if is_en else "Yêu cầu nạp tiền"
+                content = f"Account <strong>{email}</strong> has requested to top up <strong><span class=\"currency-convert\" data-balance=\"{p.amount}\">{p.amount:,} VND</span></strong> (Tx ID: <code>{p.payment_code}</code>)." if is_en else f"Tài khoản <strong>{email}</strong> vừa tạo yêu cầu nạp <strong><span class=\"currency-convert\" data-balance=\"{p.amount}\">{p.amount:,} VND</span></strong> (Mã GD: <code>{p.payment_code}</code>)."
                 notifications.append({
                     "type": "payment_pending",
-                    "title": "Yêu cầu nạp tiền",
-                    "content": f"Tài khoản <strong>{email}</strong> vừa tạo yêu cầu nạp <strong>{p.amount:,} VND</strong> (Mã GD: <code>{p.payment_code}</code>).",
+                    "title": title,
+                    "content": content,
                     "time": p.created_at.isoformat() if p.created_at else None,
                     "icon": "fa-wallet",
                     "icon_color": "warning"
@@ -570,10 +577,12 @@ def register_admin(app, db, User, Payment, MagazineHistory=None, SystemSetting=N
             for p in paid_payments:
                 u = users_map_paid.get(p.user_id)
                 email = u.email if u else f"User #{p.user_id}"
+                title = "Top-up successful" if is_en else "Nạp tiền thành công"
+                content = f"Account <strong>{email}</strong> has successfully topped up <strong><span class=\"currency-convert\" data-balance=\"{p.amount}\">{p.amount:,} VND</span></strong>." if is_en else f"Tài khoản <strong>{email}</strong> đã nạp thành công <strong><span class=\"currency-convert\" data-balance=\"{p.amount}\">{p.amount:,} VND</span></strong>."
                 notifications.append({
                     "type": "payment_paid",
-                    "title": "Nạp tiền thành công",
-                    "content": f"Tài khoản <strong>{email}</strong> đã nạp thành công <strong>{p.amount:,} VND</strong>.",
+                    "title": title,
+                    "content": content,
                     "time": p.paid_at.isoformat() if p.paid_at else p.created_at.isoformat(),
                     "icon": "fa-check-circle",
                     "icon_color": "success"

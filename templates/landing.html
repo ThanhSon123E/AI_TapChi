@@ -1175,7 +1175,7 @@
             <div class="single-pricing-box reveal">
                 <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3);">Mặc Định (Pay As You Go)</span>
                 <h3 style="font-size: 20px; font-weight: 700; color: var(--text-1); margin-top: 10px;">Giá lượt tạo lẻ tạp chí</h3>
-                <div class="single-price"><span class="currency-convert" data-balance="{{ pricing_per_magazine|int }}">{{ "{:,.0f}".format(pricing_per_magazine|int) }} VND</span> <span style="font-size: 16px; font-weight: 600; color: var(--text-3);">/ lượt tạo</span></div>
+                <div class="single-price"><span class="currency-convert" data-balance="{{ pricing_per_magazine|int }}">{{ "{:,.0f}".format(pricing_per_magazine|int).replace(",", ".") }} VND</span> <span style="font-size: 16px; font-weight: 600; color: var(--text-3);">/ lượt tạo</span></div>
                 <p style="font-size: 13.5px; color: var(--text-3); line-height: 1.6; max-width: 480px; margin: 0 auto;">Hệ thống sẽ <strong>tự động trừ thẳng</strong> số dư tài khoản của bạn ngay khi tạo thành công tạp chí cao cấp bằng AI.</p>
                 <a href="/editor" class="btn-premium-cta" style="margin-top: 24px; padding: 12px 30px; font-size: 12px;">Thử nghiệm ngay</a>
             </div>
@@ -1206,7 +1206,7 @@
                         {% endif %}
                         <div>
                             <h3 class="package-title">{{ pack.name }}</h3>
-                            <div class="package-amount"><span class="currency-convert" data-balance="{{ pack.amount }}">{{ "{:,.0f}".format(pack.amount) }} VND</span></div>
+                            <div class="package-amount"><span class="currency-convert" data-balance="{{ pack.amount }}">{{ "{:,.0f}".format(pack.amount).replace(",", ".") }} VND</span></div>
                             <p class="package-desc">{{ pack.desc }}</p>
                         </div>
                         <a href="/billing" class="btn-package-buy">Nạp gói này</a>
@@ -1232,7 +1232,7 @@
                     <i class="fas fa-plus faq-icon-toggle"></i>
                 </div>
                 <div class="faq-answer">
-                    Hệ thống áp dụng biểu phí tự động trừ tiền lẻ là <span class="currency-convert" data-balance="{{ pricing_per_magazine|int }}">{{ "{:,.0f}".format(pricing_per_magazine|int) }} VND</span> cho mỗi lượt tạo thành công tạp chí cao cấp. Khi bạn bấm nút "Tạo Tạp Chí" và hệ thống biên tập hoàn thành, số tiền này sẽ được tự động trừ thẳng vào số dư (balance) tài khoản của bạn.
+                    Hệ thống áp dụng biểu phí tự động trừ tiền lẻ là <span class="currency-convert" data-balance="{{ pricing_per_magazine|int }}">{{ "{:,.0f}".format(pricing_per_magazine|int).replace(",", ".") }} VND</span> cho mỗi lượt tạo thành công tạp chí cao cấp. Khi bạn bấm nút "Tạo Tạp Chí" và hệ thống biên tập hoàn thành, số tiền này sẽ được tự động trừ thẳng vào số dư (balance) tài khoản của bạn.
                 </div>
             </div>
 

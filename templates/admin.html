@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | AI Tạp Chí Cao Cấp</title>
+    <title>Admin Dashboard | AI Magazine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap"
@@ -1315,7 +1315,7 @@
                 <div class="logo-box">
                     <i class="fas fa-bolt"></i>
                 </div>
-                <div class="logo-text">AI TAP <span>CHI</span></div>
+                <div class="logo-text">AI <span>Magazine</span></div>
             </div>
 
             <nav class="nav-group">
@@ -1470,11 +1470,11 @@
                         <div class="stat-header">
                             <div class="stat-icon-box gold"><i class="fas fa-coins"></i></div>
                             <span class="stat-trend trend-up">
-                                +{{ "{:,.0f}".format(stats.get('revenue_30d', 0)) }}
+                                +<span class="currency-convert" data-balance="{{ stats.get('revenue_30d', 0) }}">{{ "{:,.0f}".format(stats.get('revenue_30d', 0)) }} VND</span>
                             </span>
                         </div>
-                        <div class="stat-value">{{ "{:,.0f}".format(stats.get('total_revenue', 0)) }}</div>
-                        <div class="stat-label">Doanh thu (VND)</div>
+                        <div class="stat-value"><span class="currency-convert" data-balance="{{ stats.get('total_revenue', 0) }}">{{ "{:,.0f}".format(stats.get('total_revenue', 0)) }} VND</span></div>
+                        <div class="stat-label" data-i18n="Doanh thu">Doanh thu</div>
                     </div>
                     <div class="stat-card" id="card-magazines" onclick="switchChartTab('magazines')">
                         <div class="stat-header">
@@ -1793,7 +1793,7 @@
                                             %}</span>
                                         <span class="user-email">{% if u %}{{ u.email }}{% else %}-{% endif %}</span>
                                     </td>
-                                    <td><strong>{{ "{:,.0f}".format(p.amount) }} VND</strong></td>
+                                    <td><strong><span class="currency-convert" data-balance="{{ p.amount }}">{{ "{:,.0f}".format(p.amount) }} VND</span></strong></td>
                                     <td>{{ p.transfer_content }}</td>
                                     <td>
                                         <span class="badge {{ 'badge-success' if p.status == 'paid' else 'badge-error' if p.status == 'cancelled' else 'badge-warning' }}">
@@ -1951,9 +1951,13 @@
                                 
 
                                 <div class="form-group">
-                                    <label for="pricing_per_magazine" style="font-weight:600; display:block; margin-bottom:8px;" data-i18n="Giá mỗi lượt xuất bản tạp chí (VND)">Chi phí tạo 1 số tạp chí (VND)</label>
+                                    <label for="pricing_per_magazine_display" style="font-weight:600; display:block; margin-bottom:8px;">
+                                        <span data-i18n="Giá mỗi lượt xuất bản tạp chí">Chi phí tạo 1 số tạp chí</span>
+                                        (<span>VND</span>)
+                                    </label>
                                     <div style="position:relative; display:flex; align-items:center;">
-                                        <input type="number" id="pricing_per_magazine" name="pricing_per_magazine" class="form-input" style="width:100%; padding-right:60px;" value="{{ configs.pricing_per_magazine }}" required min="0" step="1000">
+                                        <input type="text" id="pricing_per_magazine_display" class="form-input" style="width:100%; padding-right:60px;" required>
+                                        <input type="hidden" id="pricing_per_magazine" name="pricing_per_magazine" value="{{ configs.pricing_per_magazine }}">
                                         <span style="position:absolute; right:15px; font-weight:700; color:var(--text-muted);">VND</span>
                                     </div>
                                     <small style="color: var(--text-muted); font-size:11px; display:block; margin-top:4px;" data-i18n="Giá dịch vụ khi người dùng tạo tạp chí. Sẽ tự động trừ thẳng vào số dư (balance) của tài khoản người dùng sau mỗi lượt tạo thành công.">Số tiền này sẽ tự động trừ thẳng vào số dư (balance) của tài khoản người dùng ngay khi gửi lệnh tạo thành công.</small>
@@ -2485,25 +2489,25 @@
                 <div class="dashboard-layout">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-wallet" style="color: var(--accent);"></i> Yêu cầu nạp tiền</h3>
+                            <h3 class="card-title" data-i18n="Yêu cầu nạp tiền"><i class="fas fa-wallet" style="color: var(--accent);"></i> Yêu cầu nạp tiền</h3>
                         </div>
                         <div class="card-body">
                             <form action="{{ url_for('admin.my_billing') }}" method="POST">
                                 <div class="form-group">
-                                    <label>Số tiền muốn nạp (VND)</label>
-                                    <input type="text" id="displayAmount" class="form-input" placeholder="Ví dụ: 50.000" required>
+                                    <label><span data-i18n="Số tiền muốn nạp">Số tiền muốn nạp</span> (<span class="currency-unit">VND</span>)</label>
+                                    <input type="text" id="displayAmount" class="form-input" data-i18n="Ví dụ: 50.000" placeholder="Ví dụ: 50.000" required>
                                     <input type="hidden" name="amount" id="realAmount">
                                     <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
-                                        Tối thiểu 10,000 VND. Hệ thống tự động cộng tiền sau khi nhận chuyển khoản.
+                                        <span data-i18n="Tối thiểu">Tối thiểu</span> <span class="currency-convert" data-balance="10000">10,000 VND</span>. <span data-i18n="Hệ thống tự động cộng tiền sau khi nhận chuyển khoản.">Hệ thống tự động cộng tiền sau khi nhận chuyển khoản.</span>
                                     </p>
                                 </div>
                                 <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:20px;">
-                                    <i class="fas fa-qrcode"></i> Tạo mã QR thanh toán
+                                    <i class="fas fa-qrcode"></i> <span data-i18n="Tạo mã QR thanh toán">Tạo mã QR thanh toán</span>
                                 </button>
                             </form>
 
                             <div style="margin-top: 32px;">
-                                <h4 style="font-size: 14px; margin-bottom: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Giao dịch cá nhân gần đây</h4>
+                                <h4 style="font-size: 14px; margin-bottom: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;" data-i18n="Giao dịch cá nhân gần đây">Giao dịch cá nhân gần đây</h4>
                                 <div class="table-responsive" style="max-height: 300px;">
                                     <table class="custom-table">
                                         <thead>
@@ -2517,7 +2521,7 @@
                                             {% for p in recent_payments %}
                                             <tr class="payment-row-admin" data-status="{{ p.status }}">
                                                 <td><code>{{ p.payment_code }}</code></td>
-                                                <td><strong>{{ "{:,.0f}".format(p.amount) }}</strong></td>
+                                                <td><strong><span class="currency-convert" data-balance="{{ p.amount }}">{{ "{:,.0f}".format(p.amount) }} VND</span></strong></td>
                                                 <td>
                                                     <span class="badge {{ 'badge-success' if p.status == 'paid' else 'badge-error' if p.status == 'cancelled' else 'badge-warning' }}">
                                                         {{ 'Thành công' if p.status == 'paid' else 'Đã hủy' if p.status == 'cancelled' else 'Chờ xử lý' }}
@@ -2908,7 +2912,7 @@
                                                 ${data.payments.map(p => `
                                                     <tr>
                                                         <td>${p.date}</td>
-                                                        <td><strong>${p.amount}</strong></td>
+                                                        <td><strong><span class="currency-convert" data-balance="${p.amount}">${p.amount.toLocaleString('vi-VN')} VND</span></strong></td>
                                                         <td><span class="badge ${p.status === 'paid' ? 'badge-success' : p.status === 'cancelled' ? 'badge-error' : 'badge-warning'}">${p.status === 'paid' ? 'Thành công' : p.status === 'cancelled' ? 'Đã hủy' : 'Chờ xử lý'}</span></td>
                                                     </tr>
                                                 `).join('') || '<tr><td colspan="3" style="text-align:center; padding:20px;">Chưa có giao dịch</td></tr>'}
@@ -3039,7 +3043,7 @@
             displayInput.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/[^0-9]/g, '');
                 realInput.value = value;
-                if (value) e.target.value = parseInt(value).toLocaleString('vi-VN');
+                if (value) e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                 else e.target.value = '';
             });
         }
@@ -3067,6 +3071,23 @@
             }
         }, 1000);
         {% endif %}
+        {% endif %}
+
+        {% if page == 'settings' %}
+        const pricingDisplay = document.getElementById('pricing_per_magazine_display');
+        const pricingReal = document.getElementById('pricing_per_magazine');
+        if (pricingDisplay && pricingReal) {
+            const initVal = pricingReal.value;
+            if (initVal) {
+                pricingDisplay.value = initVal.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+            pricingDisplay.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                pricingReal.value = value;
+                if (value) e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                else e.target.value = '';
+            });
+        }
         {% endif %}
 
         // ── Admin Live Notifications JS ──
@@ -3106,20 +3127,21 @@
         function renderNotifications(items) {
             if (!notificationList || !notificationCount || !bellBadge) return;
             
+            const isEn = localStorage.getItem('lang') === 'en';
             if (items.length === 0) {
                 notificationList.innerHTML = `
                     <div style="padding:40px 20px;text-align:center;color:var(--text-muted);">
                         <i class="fas fa-bell-slash" style="font-size:24px;opacity:0.3;margin-bottom:12px;display:block;"></i>
-                        <span>Không có thông báo mới nào</span>
+                        <span>${isEn ? 'No new notifications' : 'Không có thông báo mới nào'}</span>
                     </div>
                 `;
-                notificationCount.textContent = '0 thông báo';
+                notificationCount.textContent = isEn ? '0 notifications' : '0 thông báo';
                 bellBadge.style.display = 'none';
                 return;
             }
             
             bellBadge.style.display = 'block';
-            notificationCount.textContent = `${items.length} thông báo`;
+            notificationCount.textContent = isEn ? (items.length === 1 ? '1 notification' : `${items.length} notifications`) : `${items.length} thông báo`;
             
             let html = '';
             items.forEach(item => {
@@ -3157,14 +3179,15 @@
                 let now = new Date();
                 let diffMs = now - date;
                 let diffMin = Math.floor(diffMs / 60000);
-                if (diffMin < 1) return 'Vừa xong';
-                if (diffMin < 60) return `${diffMin} phút trước`;
+                const isEn = localStorage.getItem('lang') === 'en';
+                if (diffMin < 1) return isEn ? 'Just now' : 'Vừa xong';
+                if (diffMin < 60) return isEn ? `${diffMin}m ago` : `${diffMin} phút trước`;
                 let diffHour = Math.floor(diffMin / 60);
-                if (diffHour < 24) return `${diffHour} giờ trước`;
+                if (diffHour < 24) return isEn ? `${diffHour}h ago` : `${diffHour} giờ trước`;
                 let diffDay = Math.floor(diffHour / 24);
-                if (diffDay === 1) return 'Hôm qua';
-                if (diffDay < 7) return `${diffDay} ngày trước`;
-                return date.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'});
+                if (diffDay === 1) return isEn ? 'Yesterday' : 'Hôm qua';
+                if (diffDay < 7) return isEn ? `${diffDay}d ago` : `${diffDay} ngày trước`;
+                return date.toLocaleDateString(isEn ? 'en-US' : 'vi-VN', {day: '2-digit', month: '2-digit'});
             } catch(e) {
                 return '';
             }
@@ -3262,7 +3285,7 @@
             if (currentChartTab === 'all' || currentChartTab === 'revenue') {
                 datasets.push({
                     label: typeof t === 'function' ? t('Doanh thu') : 'Doanh thu',
-                    data: chartRawData.revenue,
+                    data: (localStorage.getItem('lang') === 'en') ? chartRawData.revenue.map(val => (val / 25000)) : chartRawData.revenue,
                     borderColor: colors.accentColor,
                     backgroundColor: currentChartTab === 'all' ? 'transparent' : gradGold,
                     borderWidth: 3,
@@ -3395,9 +3418,15 @@
                                         label += ': ';
                                     }
                                     if (context.parsed.y !== null) {
+                                        const isEn = localStorage.getItem('lang') === 'en';
                                         // Detect if this is the Revenue dataset (based on axis ID or label)
-                                        if (context.dataset.yAxisID === 'y1' || currentChartTab === 'revenue') {
-                                            label += new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' VND';
+                                        const isRevenue = context.dataset.label === 'Revenue' || context.dataset.label === 'Doanh thu' || context.dataset.yAxisID === 'y1' || currentChartTab === 'revenue';
+                                        if (isRevenue) {
+                                            if (isEn) {
+                                                label += '$' + context.parsed.y.toFixed(2) + ' USD';
+                                            } else {
+                                                label += new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' VND';
+                                            }
                                         } else {
                                             label += context.parsed.y;
                                         }
@@ -3435,6 +3464,10 @@
                                 },
                                 callback: function(value) {
                                     if (currentChartTab === 'revenue') {
+                                        const isEn = localStorage.getItem('lang') === 'en';
+                                        if (isEn) {
+                                            return '$' + value.toFixed(2);
+                                        }
                                         if (value >= 1000000) return (value / 1000000) + 'M';
                                         if (value >= 1000) return (value / 1000) + 'k';
                                         return value;
@@ -3458,6 +3491,10 @@
                                     size: 11
                                 },
                                 callback: function(value) {
+                                    const isEn = localStorage.getItem('lang') === 'en';
+                                    if (isEn) {
+                                        return '$' + value.toFixed(2);
+                                    }
                                     if (value >= 1000000) return (value / 1000000) + 'M';
                                     if (value >= 1000) return (value / 1000) + 'k';
                                     return value;

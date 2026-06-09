@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AI Tạp Chí{% endblock %}</title>
+    <title>{% block title %}AI Magazine{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -455,7 +455,7 @@
                         <div class="nav-balance">
                             <i class="fas fa-wallet" style="font-size: 11px;"></i>
                             <span class="currency-convert" data-balance="{{ current_user.balance or 0 }}">
-                                {{ "{:,.0f}".format(current_user.balance or 0) }} VND
+                                {{ "{:,.0f}".format(current_user.balance or 0).replace(",", ".") }} VND
                             </span>
                         </div>
                         <div class="nav-user-info">
@@ -484,7 +484,7 @@
             <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
                 <div style="font-weight: 800; color: var(--gold); font-size: 11px; text-transform: uppercase; margin-bottom: 8px;">Account Balance</div>
                 <div style="font-size: 18px; font-weight: 700; color: var(--text-1);" class="currency-convert" data-balance="{{ current_user.balance or 0 }}">
-                    {{ "{:,.0f}".format(current_user.balance or 0) }} VND
+                    {{ "{:,.0f}".format(current_user.balance or 0).replace(",", ".") }} VND
                 </div>
             </div>
             <a href="/editor" class="{{ 'active' if active_page == 'home' }}"><i class="fas fa-magic"></i> Create Magazine</a>
@@ -557,6 +557,11 @@
             applyTheme(newTheme);
             localStorage.setItem('theme', newTheme);
 
+            // Re-apply translations to reflect current language on theme label
+            if (typeof applyTranslations === 'function') {
+                applyTranslations(localStorage.getItem('lang') || 'en');
+            }
+
             // Propagate theme to parent if embedded
             try {
                 if (window.parent && window.parent !== window && typeof window.parent.applyTheme === 'function') {
@@ -592,10 +597,10 @@
             if (icon && label) {
                 if (theme === 'dark') {
                     icon.className = 'fas fa-sun';
-                    label.innerText = typeof t === 'function' ? t('Light') : 'Light';
+                    label.innerText = 'Light';
                 } else {
                     icon.className = 'fas fa-moon';
-                    label.innerText = typeof t === 'function' ? t('Dark') : 'Dark';
+                    label.innerText = 'Dark';
                 }
             }
         }

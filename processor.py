@@ -392,6 +392,12 @@ Nhiệm vụ 2: NHẬN DIỆN metadata. Nếu thấy tên tác giả hoặc ch�
 Nhiệm vụ 3: ĐỀ XUẤT bố cục. Nếu nội dung dài và nhiều thông tin, hãy thêm "layout": "3cols" vào phần tử đầu tiên. Nếu nội dung ngắn hoặc mang tính chất tâm sự, hãy để "layout": "2cols".
 """
 
+INVALID_AUTHORS = {
+    "admin", "administrator", "user", "windows user", "microsoft", "author", 
+    "unknown", "pc", "laptop", "un-named", "unnamed", "un-name", "unnamed user", 
+    "editor", "tác giả", "viết bởi", "by", "n/a", "none", "null", "undefined"
+}
+
 def analyze_content(ordered_items: list, api_key: str, keep_original: bool = True, hint_author: str = "", hint_desc: str = "", llm_provider="openrouter", llm_model="openai/gpt-4o-mini") -> list:
     ai_name = get_friendly_ai_name(llm_provider, llm_model)
     # Chiến thuật mới: Giữ nguyên trình tự gốc, chỉ dùng AI để gán nhãn (label) loại nội dung
@@ -403,7 +409,8 @@ def analyze_content(ordered_items: list, api_key: str, keep_original: bool = Tru
         user_prompt = f"Gợi ý - Tác giả: {hint_author}, Mô tả: {hint_desc}\n\n" + user_prompt
 
     _SYSTEM = """Bạn là Giám đốc Biên tập. Phân loại từng đoạn văn theo index: [{"idx": 0, "type": "intro|body|heading|pullquote|caption"}].
-    Nhiệm vụ 2: Nhận diện metadata: {"metadata": {"author": "...", "topic": "..."}} ở phần tử đầu tiên.
+    Nhiệm vụ 2: Nhận diện metadata: {"metadata": {"author": "...", "topic": "..."}} ở phần tử đầu tiên. 
+    LƯU Ý QUAN TRỌNG VỀ TÁC GIẢ: Chỉ điền "author" nếu tìm thấy tên người cụ thể (ví dụ: "Nguyễn Văn A", "Trần Thị B") là tác giả thực sự trong văn bản. Không được dùng hoặc chế ra các tên chung chung như "admin", "un-named", "unknown", "tác giả", "chưa rõ", "user", "editor", v.v. Nếu không có tên tác giả thực sự, hãy để trống trường "author" (chuỗi rỗng "").
     Nhiệm vụ 3: Đề xuất layout: "3cols" hoặc "2cols".
     QUAN TRỌNG: Chỉ trả về JSON, không giải thích.
     """
@@ -431,7 +438,10 @@ def analyze_content(ordered_items: list, api_key: str, keep_original: bool = Tru
         models.append("gpt-4o-mini")
 
     labels_map = {}
-    detected_meta = {"author": hint_author, "topic": hint_desc}
+    cleaned_hint_author = hint_author.strip()
+    if cleaned_hint_author.lower() in INVALID_AUTHORS:
+        cleaned_hint_author = ""
+    detected_meta = {"author": cleaned_hint_author, "topic": hint_desc}
 
     for model in models:
         try:
@@ -446,7 +456,10 @@ def analyze_content(ordered_items: list, api_key: str, keep_original: bool = Tru
                 if "idx" in res: labels_map[res["idx"]] = res["type"]
                 if "metadata" in res:
                     m = res["metadata"]
-                    if not detected_meta["author"]: detected_meta["author"] = m.get("author") or ""
+                    if not detected_meta["author"]:
+                        ai_author = (m.get("author") or "").strip()
+                        if ai_author.lower() not in INVALID_AUTHORS:
+                            detected_meta["author"] = ai_author
                     if not detected_meta["topic"]: detected_meta["topic"] = m.get("topic") or ""
                 if "layout" in res: detected_meta["layout"] = res["layout"]
             print(f"[{ai_name}] -> Xử lý thành công bằng mô hình AI: {model}")
@@ -871,16 +884,23 @@ def process_docx_to_pdf(file_paths, output_folder, output_pdf_path, journal_meta
         # Gán author và topic trực tiếp vào item title trong ch_seq để dùng lúc dựng trang!
         for item in ch_seq:
             if item["type"] == "text" and item.get("kind") == "title":
-                item["author"] = meta.get("author") or author_hint or ""
+                raw_author = (meta.get("author") or author_hint or "").strip()
+                if raw_author.lower() in INVALID_AUTHORS:
+                    raw_author = ""
+                item["author"] = raw_author
                 item["topic"] = meta.get("topic") or topic_hint or ""
 
         # Lưu gợi ý layout từ AI vào meta của chương (lấy từ chương đầu tiên làm chuẩn cho cả cuốn hoặc tùy ý)
         if i == 0 and meta.get("layout"):
             journal_meta["ai_layout"] = meta.get("layout")
 
+        raw_author_toc = (meta.get("author") or author_hint or "").strip()
+        if raw_author_toc.lower() in INVALID_AUTHORS:
+            raw_author_toc = ""
+
         toc_entries.append({
             "title": title,
-            "author": meta.get("author", author_hint),
+            "author": raw_author_toc,
             "topic": meta.get("topic", topic_hint)
         })
         # Thay vì PageBreak cưỡng bức, ta dùng một Spacer lớn hoặc HR để ngăn cách bài viết
@@ -1033,12 +1053,15 @@ def process_docx_to_pdf(file_paths, output_folder, output_pdf_path, journal_meta
         canvas.drawCentredString(PAGE_W/2, PAGE_H-16*mm, journal_meta.get("magazine_title", "MAGAZINE").upper())
         
         # Vẽ giá ở góc trái dưới cùng (Vị trí cố định trên trang)
-        price = journal_meta.get("price", "30.000đ")
+        price = journal_meta.get("price", "30.000VND")
         canvas.setFillColor(HexColor("#F06292")) # Màu hồng nhạt hơn, dịu mắt
         canvas.rect(12*mm, 12*mm, 42*mm, 8*mm, fill=1, stroke=0)
         canvas.setFillColor(white)
         canvas.setFont(cfg["body_font"], 8.5)
-        canvas.drawCentredString(12*mm + 21*mm, 14.5*mm, f"Giá: {price}")
+        # Tự động phát hiện ngôn ngữ qua pub_date
+        is_en = any(m in journal_meta.get("pub_date", "").upper() for m in ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"])
+        label = "Price:" if is_en else "Giá:"
+        canvas.drawCentredString(12*mm + 21*mm, 14.5*mm, f"{label} {price}")
         canvas.restoreState()
 
     def cb_back_cover(canvas, doc):

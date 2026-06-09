@@ -443,6 +443,62 @@ def cancel_payment(payment_code):
     db.session.commit()
     return jsonify({"ok": True})
 
+@app.route("/api/extract-docx-metadata", methods=["POST"])
+@login_required
+def extract_docx_metadata():
+    file = request.files.get("file")
+    if not file or not file.filename.endswith(".docx"):
+        return jsonify({"success": False, "message": "File không hợp lệ"}), 400
+    
+    try:
+        from docx import Document
+        import re
+        doc = Document(file)
+        
+        # 1. Thử lấy từ core_properties
+        author = ""
+        try:
+            author = doc.core_properties.author or ""
+            author = author.strip()
+        except:
+            pass
+            
+        # 2. Nếu core_properties không có hoặc là tên mặc định chung chung
+        invalid_authors = {
+            "admin", "administrator", "user", "windows user", "microsoft", "author", 
+            "unknown", "pc", "laptop", "un-named", "unnamed", "un-name", "unnamed user", 
+            "editor", "tác giả", "viết bởi", "by", "n/a", "none", "null", "undefined"
+        }
+        if author.lower().strip() in invalid_authors:
+            author = ""
+            
+        if not author:
+            # Quét 15 paragraph đầu tiên để tìm tên tác giả
+            count = 0
+            for p in doc.paragraphs:
+                text = p.text.strip()
+                if not text:
+                    continue
+                count += 1
+                if count > 15:
+                    break
+                # Regex tìm các mẫu: Tác giả: ..., Author: ..., Viết bởi: ..., By: ...
+                match = re.search(r"^(tác\s+giả|author|viết\s+bởi|by|bài\s+viết|photo\s+by)\s*[:\-–—]?\s*(.+)$", text, re.IGNORECASE)
+                if match:
+                    possible_author = match.group(2).strip()
+                    possible_author = re.sub(r"^[\"'“‘]+|[\"'”’]+$", "", possible_author).strip()
+                    if possible_author and possible_author.lower().strip() not in invalid_authors and len(possible_author) < 50:
+                        author = possible_author
+                        break
+        
+        return jsonify({
+            "success": True,
+            "author": author
+        })
+    except Exception as e:
+        print(f"[METADATA EXTRACT ERROR]: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
 @app.route("/webhook/sepay", methods=["POST", "GET"])
 def sepay_webhook():
     # GET: test nhanh xem route co song khong
@@ -620,9 +676,11 @@ def editor():
             print(f"[DEBUG POST] Tài khoản: {current_user.email}, Giá: {pricing}, Số dư: {current_user.balance}")
             if current_user.balance < pricing:
                 print(f"[DEBUG POST] LỖI: Số dư không đủ!")
+                pricing_str = f"{pricing:,.0f}".replace(",", ".")
+                balance_str = f"{current_user.balance:,.0f}".replace(",", ".")
                 return jsonify({
                     "status": "error", 
-                    "message": f"Số dư tài khoản không đủ! Mỗi lượt tạo tạp chí cần {pricing:,} VND. Số dư hiện tại của bạn là {current_user.balance:,} VND. Vui lòng nạp thêm tiền."
+                    "message": f"Số dư tài khoản không đủ! Mỗi lượt tạo tạp chí cần {pricing_str} VND. Số dư hiện tại của bạn là {balance_str} VND. Vui lòng nạp thêm tiền."
                 }), 400
 
             print("[DEBUG POST] Đang đọc files và form data...")
@@ -694,7 +752,7 @@ def editor():
                 "office_info": request.form.get("office_info", ""),
                 "reps_info": request.form.get("reps_info", ""),
                 "license_info": request.form.get("license_info", ""),
-                "price": request.form.get("price", "30.000đ"),
+                "price": request.form.get("price", "30.000VND"),
                 "chapter_titles": chapter_titles,
                 "chapter_descs": chapter_descs
             }

@@ -3093,7 +3093,11 @@ In tại Công ty TNHH MTV</textarea>
 
                 <div class="form-group" style="max-width:200px;">
                   <label data-i18n="GIÁ BÌA">GIÁ BÌA</label>
-                  <input type="text" name="price" class="form-input" value="30.000đ">
+                  <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <input type="text" id="priceDisplayInput" class="form-input" value="30.000" style="padding-right: 55px; width: 100%;">
+                    <span id="priceCurrencySuffix" style="position: absolute; right: 12px; font-weight: 700; font-size: 13px; color: var(--text-3); user-select: none; pointer-events: none;">VND</span>
+                    <input type="hidden" name="price" id="priceHiddenInput" value="30.000VND">
+                  </div>
                 </div>
               </div>
             </div><!-- /section 3 (FIXED) -->
@@ -3654,6 +3658,38 @@ In tại Công ty TNHH MTV</textarea>
     cvs.addEventListener('touchmove', e => { const t = e.touches[0]; cvs.dispatchEvent(new MouseEvent('mousemove', { clientX: t.clientX, clientY: t.clientY })); e.preventDefault(); }, { passive: false });
     cvs.addEventListener('touchend', e => { cvs.dispatchEvent(new MouseEvent('mouseup', {})); e.preventDefault(); }, { passive: false });
 
+    function formatPriceInput(lang) {
+      const displayInput = document.getElementById('priceDisplayInput');
+      const suffixSpan = document.getElementById('priceCurrencySuffix');
+      const hiddenInput = document.getElementById('priceHiddenInput');
+      if (!displayInput || !suffixSpan || !hiddenInput) return;
+
+      let val = displayInput.value.trim();
+      let currentCurrency = suffixSpan.textContent.trim();
+
+      let numericVal = parseFloat(val.replace(/\./g, '').replace(/,/g, '.')) || 0;
+
+      if (lang === 'vi') {
+        if (currentCurrency === 'USD') {
+          numericVal = Math.round(numericVal * 25000);
+        }
+        suffixSpan.textContent = 'VND';
+        displayInput.value = numericVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        hiddenInput.value = displayInput.value + "VND";
+      } else {
+        if (currentCurrency === 'VND') {
+          numericVal = parseFloat((numericVal / 25000).toFixed(2));
+        }
+        suffixSpan.textContent = 'USD';
+        
+        const usdStr = numericVal.toFixed(2);
+        const parts = usdStr.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        displayInput.value = parts.join('.');
+        hiddenInput.value = displayInput.value + "USD";
+      }
+    }
+
     window.onLanguageChanged = function(lang) {
       // Đồng bộ hóa chữ phụ mặc định trên Canvas nếu người dùng chưa tự ý chỉnh sửa
       const subInput = document.getElementById('magazineSubtitle');
@@ -3703,8 +3739,16 @@ In tại Công ty TNHH MTV</textarea>
         }
       }
 
-      // Vẽ lại canvas để cập nhật ngôn ngữ chữ mặc định
+      // Đồng bộ hóa ô giá bìa
+      formatPriceInput(lang);
+
+      // Vẽ lại canvas để cập ngữ ngôn ngữ chữ mặc định
       renderCover();
+
+      // Render lại danh sách file để đồng bộ ngôn ngữ ngay lập tức
+      if (typeof renderFileList === 'function') {
+        renderFileList();
+      }
     };
 
     function updSlider(id, val, spanId) { const el = document.getElementById(id); if (el) el.value = val; const sp = document.getElementById(spanId); if (sp) sp.textContent = Math.round(val) + '%'; }
@@ -3896,28 +3940,48 @@ In tại Công ty TNHH MTV</textarea>
     }
 
     let selectedFiles = [];
-    document.getElementById('wordFileInput').addEventListener('change', function(e) {
-      const files = Array.from(e.target.files);
-      if (files.length > 10) {
+    function handleWordFiles(filesList) {
+      const files = Array.from(filesList);
+      if (selectedFiles.length + files.length > 10) {
         alert(t("Maximum 10 files allowed."));
-        e.target.value = "";
         return;
       }
-      if (files.length === 0) return;
       files.forEach(f => {
         if (f.size > 30 * 1024 * 1024) {
-          alert(`File "${f.name}" quá lớn (>30MB).`);
+          alert(t("Tệp quá lớn (>30MB).").replace("Tệp", `"${f.name}"`));
           return;
         }
-        selectedFiles.push({
+        const fileItem = {
           file: f,
           id: Math.random().toString(36).substr(2, 9),
           title: f.name.replace(/\.[^/.]+$/, ""),
           author: "",
           desc: ""
-        });
+        };
+        selectedFiles.push(fileItem);
+
+        // Gọi API để phân tích tác giả từ file Word
+        const formData = new FormData();
+        formData.append("file", f);
+        fetch("/api/extract-docx-metadata", {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.author) {
+            fileItem.desc = data.author + " : ";
+            renderFileList();
+          }
+        })
+        .catch(err => console.error("Lỗi trích xuất tác giả:", err));
       });
       renderFileList();
+    }
+
+    document.getElementById('wordFileInput').addEventListener('change', function(e) {
+      if (e.target.files.length === 0) return;
+      handleWordFiles(e.target.files);
       e.target.value = '';
     });
 
@@ -3926,7 +3990,7 @@ In tại Công ty TNHH MTV</textarea>
       container.innerHTML = '';
 
       if (selectedFiles.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-3); font-style:italic; font-size:13px; text-align:center;">Chưa có tệp nào được chọn</div>';
+        container.innerHTML = `<div style="color:var(--text-3); font-style:italic; font-size:13px; text-align:center;">${t('Chưa có tệp nào được chọn')}</div>`;
         return;
       }
 
@@ -3941,24 +4005,24 @@ In tại Công ty TNHH MTV</textarea>
 
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <span style="font-size:11px; color:var(--gold); font-weight:800; text-transform:uppercase; letter-spacing:1px;">CHƯƠNG ${index + 1}</span>
+            <span style="font-size:11px; color:var(--gold); font-weight:800; text-transform:uppercase; letter-spacing:1px;">${t('CHƯƠNG')} ${index + 1}</span>
             <div style="display:flex; gap:8px;">
-              <button type="button" class="style-btn" onclick="moveFile(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Di chuyển lên"><i class="fas fa-chevron-up"></i></button>
-              <button type="button" class="style-btn" onclick="moveFile(${index}, 1)" ${index === selectedFiles.length - 1 ? 'disabled' : ''} title="Di chuyển xuống"><i class="fas fa-chevron-down"></i></button>
-              <button type="button" class="style-btn" onclick="removeFile(${index})" style="color:#ef4444;" title="Xóa"><i class="fas fa-times"></i></button>
+              <button type="button" class="style-btn" onclick="moveFile(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="${t('Di chuyển lên')}"><i class="fas fa-chevron-up"></i></button>
+              <button type="button" class="style-btn" onclick="moveFile(${index}, 1)" ${index === selectedFiles.length - 1 ? 'disabled' : ''} title="${t('Di chuyển xuống')}"><i class="fas fa-chevron-down"></i></button>
+              <button type="button" class="style-btn" onclick="removeFile(${index})" style="color:#ef4444;" title="${t('Xóa')}"><i class="fas fa-times"></i></button>
             </div>
           </div>
           
           <div class="form-group" style="margin-bottom:12px;">
-            <label style="font-size:10px; margin-bottom:4px;">TIÊU ĐỀ CHƯƠNG</label>
+            <label style="font-size:10px; margin-bottom:4px;">${t('TIÊU ĐỀ CHƯƠNG')}</label>
             <input type="text" class="form-input" style="height:38px; font-size:14px; font-weight:600;" 
-                   value="${item.title}" oninput="selectedFiles[${index}].title = this.value" placeholder="Nhập tên chương...">
+                   value="${item.title}" oninput="selectedFiles[${index}].title = this.value" placeholder="${t('Nhập tên chương...')}">
           </div>
           
           <div class="form-group" style="margin-bottom:0;">
-            <label style="font-size:10px; margin-bottom:4px;">THÔNG TIN CHI TIẾT (Định dạng: Tác giả : Nội dung)</label>
+            <label style="font-size:10px; margin-bottom:4px;">${t('THÔNG TIN CHI TIẾT (Định dạng: Tác giả : Nội dung)')}</label>
             <textarea class="form-input" style="height:80px; font-size:13px; padding:10px; resize:none;" 
-                      oninput="selectedFiles[${index}].desc = this.value" placeholder="Ví dụ: Nguyễn Văn A : Khám phá xu hướng thời trang 2025...">${item.desc}</textarea>
+                      oninput="selectedFiles[${index}].desc = this.value" placeholder="${t('Ví dụ: Nguyễn Văn A : Khám phá xu hướng thời trang 2025...')}">${item.desc}</textarea>
           </div>
           
           <div style="font-size:10px; color:var(--text-3); margin-top:8px; display:flex; align-items:center; gap:5px;">
@@ -4055,7 +4119,21 @@ In tại Công ty TNHH MTV</textarea>
       if (el) {
         el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('dragging'); });
         el.addEventListener('dragleave', () => el.classList.remove('dragging'));
-        el.addEventListener('drop', () => el.classList.remove('dragging'));
+        el.addEventListener('drop', e => {
+          e.preventDefault();
+          el.classList.remove('dragging');
+          if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+            if (id === 'wordDropZone') {
+              handleWordFiles(e.dataTransfer.files);
+            } else if (id === 'pdfDropZone') {
+              const fileInput = document.getElementById('pdfFileInput');
+              if (fileInput) {
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+              }
+            }
+          }
+        });
       }
     });
 
@@ -4155,7 +4233,7 @@ In tại Công ty TNHH MTV</textarea>
                   }, 1000);
                 } else if (statusData.status === 'error') {
                   clearInterval(pollInterval);
-                  alert(t("Magazine generation error: ") + (statusData.message || t("Unknown error")));
+                  alert(t("Magazine generation error: ") + t(statusData.message || "Unknown error"));
                   resetUI();
                 }
               } catch (pollErr) {
@@ -4165,7 +4243,7 @@ In tại Công ty TNHH MTV</textarea>
           }
         } else {
           const errorJson = await response.json().catch(() => ({}));
-          alert(t("Initialization error: ") + (errorJson.message || t("Server Error")));
+          alert(t("Initialization error: ") + t(errorJson.message || "Server Error"));
           resetUI();
         }
       } catch (err) {
@@ -4193,6 +4271,35 @@ In tại Công ty TNHH MTV</textarea>
           labelEl.style.fontFamily = fontMap[textStyles[key].font] || 'inherit';
         }
       });
+
+      // Đăng ký sự kiện format price
+      const priceDisplayInput = document.getElementById('priceDisplayInput');
+      if (priceDisplayInput) {
+        priceDisplayInput.addEventListener('input', function() {
+          let val = this.value;
+          const suffix = document.getElementById('priceCurrencySuffix').textContent.trim();
+          const hiddenInput = document.getElementById('priceHiddenInput');
+          let cleanVal = val.replace(/[^0-9.,]/g, '');
+          
+          if (suffix === 'VND') {
+            let num = cleanVal.replace(/[^0-9]/g, '');
+            this.value = num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          } else {
+            let formatted = cleanVal.replace(/,/g, '.');
+            const dotIndex = formatted.indexOf('.');
+            if (dotIndex !== -1) {
+              formatted = formatted.substring(0, dotIndex + 1) + formatted.substring(dotIndex + 1).replace(/\./g, '');
+            }
+            this.value = formatted;
+          }
+          hiddenInput.value = this.value + suffix;
+        });
+
+        priceDisplayInput.addEventListener('blur', () => {
+          const currentLang = localStorage.getItem('lang') || 'en';
+          formatPriceInput(currentLang);
+        });
+      }
 
       renderCover();
     });

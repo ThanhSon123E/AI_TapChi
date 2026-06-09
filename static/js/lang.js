@@ -91,6 +91,36 @@ const translations = {
         "Đơn hàng thành công": "Successful Orders",
         "Doanh thu (VND)": "Revenue (VND)",
         "Tạp chí đã tạo": "Created Magazines",
+        "Không xác định": "Unknown",
+        "Nội dung": "Content",
+        "Duyệt": "Approve",
+        "Xem": "View",
+        "Xóa": "Delete",
+        "Đã hủy": "Cancelled",
+        "Nạp tiền tài khoản": "Top Up Account",
+        "Tăng số dư để tiếp tục sử dụng dịch vụ tạo tạp chí": "Increase your balance to continue using the magazine service",
+        "Yêu cầu nạp tiền": "Top Up Request",
+        "Quét mã QR": "Scan QR Code",
+        "Giao dịch cá nhân gần đây": "Recent Personal Transactions",
+        "Mã GD": "Tx ID",
+        "Đang chờ thanh toán...": "Waiting for payment...",
+        "Hết hạn sau:": "Expires in:",
+        "Hủy giao dịch này": "Cancel This Transaction",
+        "Thành công!": "Success!",
+        "Tạo yêu cầu nạp tiền để hiển thị mã QR": "Create a top-up request to display the QR code",
+        "Trình tạo Tạp chí AI": "AI Magazine Creator",
+        "Thiết kế và xuất bản tạp chí chuyên nghiệp chỉ với vài bước": "Design and publish professional magazines in just a few steps",
+        "Quản lý thông tin cá nhân và bảo mật của bạn": "Manage your personal information and security",
+        "Danh sách các tạp chí bạn đã tạo": "List of magazines you have created",
+        "Nhập họ tên của bạn": "Enter your full name",
+        "Tài khoản Google: Bạn không cần quản lý mật khẩu tại đây.": "Google Account: You don't need to manage passwords here.",
+        "Cập nhật hồ sơ": "Update Profile",
+        "Nhập mật khẩu hiện tại": "Enter current password",
+        "Tối thiểu 6 ký tự": "Minimum 6 characters",
+        "Nhập lại mật khẩu mới": "Re-enter new password",
+        "Bạn chưa tạo tạp chí nào": "You haven't created any magazines yet",
+        "Hãy bắt đầu tạo tạp chí đầu tiên của bạn ngay!": "Start creating your first magazine now!",
+        "Tạo ngay": "Create Now",
         "Giao dịch gần đây": "Recent Transactions",
         "Xem tất cả": "View All",
         "Tất cả": "All",
@@ -98,6 +128,9 @@ const translations = {
         "Đơn hàng": "Orders",
         "Doanh thu": "Revenue",
         "Tạp chí": "Magazines",
+        "Hoạt động & Tăng trưởng": "Activity & Growth",
+        "Thống kê hoạt động của hệ thống trong 30 ngày gần đây": "30-day system activity statistics",
+        "Đang tải dữ liệu biểu đồ...": "Loading chart data...",
         "Người dùng mới": "New Users",
         "Khách hàng": "Customer",
         "Số tiền": "Amount",
@@ -178,6 +211,10 @@ const translations = {
         " đến server: ": " to server: ",
         
         // AI Providers & Models translations
+        "OpenRouter API Key": "OpenRouter API Key",
+        "OpenAI API Key (Direct)": "OpenAI API Key (Direct)",
+        "Gemini API Key": "Gemini API Key",
+        "DeepSeek API Key": "DeepSeek API Key",
         "OpenRouter (Tích hợp nhiều bên)": "OpenRouter (Multi-provider)",
         "OpenAI (Trực tiếp chính hãng)": "OpenAI (Direct Official)",
         "Google Gemini API (Direct)": "Google Gemini API (Direct)",
@@ -195,11 +232,27 @@ const translations = {
         "Gemini (Direct) Models": "Gemini (Direct) Models",
         "DeepSeek (Direct) Models": "DeepSeek (Direct) Models",
         "Biểu phí & Gói Nạp Tiền": "Pricing & Top-Up Packages",
-        "Giá mỗi lượt xuất bản tạp chí (VND)": "Price Per Magazine Generation (VND)",
+        "Giá mỗi lượt xuất bản tạp chí": "Price Per Magazine Generation",
         "Giá dịch vụ khi người dùng tạo tạp chí. Sẽ tự động trừ thẳng vào số dư (balance) của tài khoản người dùng sau mỗi lượt tạo thành công.": "The cost charged to users for generating a magazine. Automatically deducted from their balance upon success.",
         "Gói Nạp Tiền (Định dạng JSON)": "Top-Up Packages (JSON Format)",
         "Mảng JSON chứa: name (Tên gói), amount (Số tiền nạp), desc (Mô tả hiển thị). Ví dụ: ": "JSON array containing: name (Package name), amount (Deposit amount), desc (Display description). Example: ",
         "Tải JSON mẫu": "Load Sample JSON",
+        "Không thể tải dữ liệu biểu đồ": "Unable to load chart data",
+        "Lỗi kết nối máy chủ": "Server connection error",
+        "Xem Trang lật: ": "View Flipbook: ",
+        "Xem PDF: ": "View PDF: ",
+        "Chi tiết Người dùng:": "User Details:",
+        "Đăng nhập cuối": "Last Login",
+        "Số tạp chí": "Magazines Count",
+        "Số lần nạp tiền": "Deposit Count",
+        "Thanh toán (Tuần)": "Payments (Week)",
+        "Thanh toán (Tháng)": "Payments (Month)",
+        "Lật trang": "Flipbook",
+        "Lịch sử giao dịch": "Transaction History",
+        "Đã sao chép: ": "Copied: ",
+        "Duyệt thanh toán": "Approve Payment",
+        "XÓA VĨNH VIỄN": "DELETE PERMANENTLY",
+        "lần": "times",
         "Mảng JSON chứa: name (Tên gói), amount (Số tiền nạp), desc (Mô tả hiển thị).": "JSON array containing: name (Package name), amount (Deposit amount), desc (Display description).",
         "Chọn nhanh gói nạp tiền": "Quickly select top-up package",
         "Gói Đồng": "Bronze Package",
@@ -263,7 +316,10 @@ const translations = {
         "Tăng số dư để tiếp tục sử dụng dịch vụ tạo tạp chí": "Increase your balance to continue using the magazine creation service",
         "Yêu cầu nạp tiền": "Top Up Request",
         "Số tiền muốn nạp (VND)": "Top Up Amount (VND)",
-        "Ví dụ: 50.000": "Example: 50,000",
+        "Ví dụ: 50.000": "Example: 50.000",
+        "Số tiền muốn nạp": "Deposit Amount",
+        "Hệ thống tự động cộng tiền sau khi nhận chuyển khoản.": "System will automatically add funds after receiving transfer.",
+        "Chọn nhanh gói nạp tiền": "Select package quickly",
         "Tối thiểu 10,000 VND. Hệ thống tự động cộng tiền sau khi nhận chuyển khoản.": "Minimum 10,000 VND. The system automatically credits your account after receiving the transfer.",
         "Tạo mã QR thanh toán": "Generate Payment QR Code",
         "Giao dịch cá nhân gần đây": "Recent Personal Transactions",
@@ -365,12 +421,23 @@ const translations = {
         "Main Title Option": "Main Title",
         "Subtitle Option": "Subtitle",
         "Date Option": "Publication Date",
-        "Barcode Option": "Barcode & ISSN"
+        "Barcode Option": "Barcode & ISSN",
+        "Chưa có tệp nào được chọn": "No files selected",
+        "CHƯƠNG": "CHAPTER",
+        "TIÊU ĐỀ CHƯƠNG": "CHAPTER TITLE",
+        "THÔNG TIN CHI TIẾT (Định dạng: Tác giả : Nội dung)": "DETAILED INFO (Format: Author : Content)",
+        "Di chuyển lên": "Move up",
+        "Di chuyển xuống": "Move down",
+        "Tệp quá lớn (>30MB).": "File is too large (>30MB).",
+        "Tải Lên PDF": "PDF Upload",
+        "Vui lòng tải lên ít nhất 1 file .docx!": "Please upload at least 1 .docx file!",
+        "Chỉ cho phép tải lên tối đa 10 file Word!": "Maximum 10 Word files allowed!",
+        "Không tìm thấy file .docx hợp lệ!": "No valid .docx file found!"
     },
     // Vietnamese translations (for elements written in English in the HTML)
     vi: {
         // Navigation & General
-        "AI Magazine": "AI Tạp Chí",
+        "AI Magazine": "AI Magazine",
         
         // LLM Provider & Models (English to Vietnamese)
         "OpenRouter (Multi-provider)": "OpenRouter (Tích hợp nhiều bên)",
@@ -740,7 +807,16 @@ const translations = {
         "Main Title Option": "Tiêu đề chính",
         "Subtitle Option": "Tiêu đề phụ",
         "Date Option": "Ngày xuất bản",
-        "Barcode Option": "Mã vạch & ISSN"
+        "Barcode Option": "Mã vạch & ISSN",
+        "PDF Upload": "Tải Lên PDF",
+        "Fashion & Beauty": "Thời trang & Làm đẹp",
+        "Minimalism": "Tối giản",
+        "Science & Education": "Khoa học & Giáo dục",
+        "Art & Creative": "Nghệ thuật & Sáng tạo",
+        "Business & Knowledge": "Kinh doanh & Tri thức",
+        "Fashion Style (Random)": "Phong cách thời trang (Ngẫu nhiên)",
+        "Journalism Style (Báo chí)": "Phong cách báo chí",
+        "Technology & Science (Công nghệ)": "Công nghệ & Khoa học"
     }
 };
 
@@ -751,6 +827,30 @@ const translations = {
  */
 function t(key) {
     const lang = localStorage.getItem('lang') || 'en';
+    if (typeof key === 'string') {
+        const cleanKey = key.trim();
+        if (lang === 'en') {
+            // Regex match thông báo lỗi nạp tiền từ backend:
+            // "Số dư tài khoản không đủ! Mỗi lượt tạo tạp chí cần 10,000 VND. Số dư hiện tại của bạn là 0 VND. Vui lòng nạp thêm tiền."
+            const balanceRegex = /Số dư tài khoản không đủ!\s*Mỗi lượt tạo tạp chí cần\s*([\d,.]+)\s*(?:VND|đ)?\.\s*Số dư hiện tại của bạn là\s*([\d,.]+)\s*(?:VND|đ)?\.\s*Vui lòng nạp thêm tiền\./i;
+            const match = cleanKey.match(balanceRegex);
+            if (match) {
+                const pricing = parseInt(match[1].replace(/[,.]/g, '')) || 0;
+                const balance = parseInt(match[2].replace(/[,.]/g, '')) || 0;
+                const pUsd = (pricing / 25000).toFixed(2);
+                const bUsd = (balance / 25000).toFixed(2);
+                return `Insufficient balance! Each magazine creation requires $${pUsd} USD (${pricing.toLocaleString('en-US')} VND). Your current balance is $${bUsd} USD (${balance.toLocaleString('en-US')} VND). Please top up.`;
+            }
+        } else if (lang === 'vi') {
+            const balanceRegexEn = /Insufficient balance!\s*Each magazine creation requires\s*\$?([\d,.]+)\s*(?:USD)?\s*\(([\d,.]+)\s*VND\)\.\s*Your current balance is\s*\$?([\d,.]+)\s*(?:USD)?\s*\(([\d,.]+)\s*VND\)\.\s*Please top up\./i;
+            const match = cleanKey.match(balanceRegexEn);
+            if (match) {
+                const pricing = match[2];
+                const balance = match[4];
+                return `Số dư tài khoản không đủ! Mỗi lượt tạo tạp chí cần ${pricing} VND. Số dư hiện tại của bạn là ${balance} VND. Vui lòng nạp thêm tiền.`;
+            }
+        }
+    }
     if (translations[lang] && translations[lang][key]) {
         return translations[lang][key];
     }
@@ -767,6 +867,28 @@ function applyTranslations(lang) {
     const sortedKeys = Object.keys(langDict).sort((a, b) => b.length - a.length);
 
     // First handle data-i18n attributes
+    // Handle data-i18n-title attributes for tooltips
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (!el.hasAttribute('data-original-title')) {
+            el.setAttribute('data-original-title', el.getAttribute('title') || '');
+        }
+        const originalTitle = el.getAttribute('data-original-title');
+        const translatedTitle = langDict[key] || langDict[originalTitle] || originalTitle || key;
+        el.setAttribute('title', translatedTitle);
+    });
+
+    // Handle data-label attributes (used in responsive tables)
+    document.querySelectorAll('[data-label]').forEach(el => {
+        const key = el.getAttribute('data-label');
+        if (!el.hasAttribute('data-original-label')) {
+            el.setAttribute('data-original-label', key);
+        }
+        const originalLabel = el.getAttribute('data-original-label');
+        const translatedLabel = langDict[key] || langDict[originalLabel] || originalLabel || key;
+        el.setAttribute('data-label', translatedLabel);
+    });
+
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
 
@@ -851,11 +973,16 @@ function updateUI(isVi) {
     document.querySelectorAll('.currency-convert').forEach(el => {
         const raw = parseInt(el.getAttribute('data-balance')) || 0;
         if (isVi) {
-            el.textContent = raw.toLocaleString('vi-VN') + ' VND';
+            el.textContent = raw.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' VND';
         } else {
             const usd = (raw / 25000).toFixed(2);
             el.textContent = '$' + usd + ' USD';
         }
+    });
+
+    // Update currency unit labels
+    document.querySelectorAll('.currency-unit').forEach(el => {
+        el.textContent = isVi ? 'VND' : 'USD';
     });
 
     const langBtn = document.getElementById('langToggleText');
@@ -922,10 +1049,18 @@ function toggleLanguage() {
 }
 
 function initLang() {
-    // Mặc định LUÔN khởi động bằng tiếng Anh, bất kể người dùng đã chọn ngôn ngữ nào trước đó.
-    // Người dùng vẫn có thể chuyển sang tiếng Việt trong phiên làm việc,
-    // nhưng mỗi lần reload hoặc chạy lại ứng dụng sẽ reset về tiếng Anh.
-    const lang = 'en';
+    // Khôi phục ngôn ngữ đã chọn từ localStorage hoặc cookie, mặc định là 'en'
+    let lang = localStorage.getItem('lang');
+    if (!lang) {
+        // Thử lấy từ cookie
+        const match = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
+        if (match) {
+            lang = match[2];
+        }
+    }
+    if (!lang || (lang !== 'en' && lang !== 'vi')) {
+        lang = 'en';
+    }
     localStorage.setItem('lang', lang);
     document.cookie = "lang=" + lang + "; path=/; max-age=31536000; SameSite=Lax";
     applyTranslations(lang);
